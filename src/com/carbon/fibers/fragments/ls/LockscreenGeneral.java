@@ -59,6 +59,8 @@ public class LockscreenGeneral extends SettingsPreferenceFragment implements
     private static final String PREF_LOCKSCREEN_SHORTCUTS = "lockscreen_shortcuts";
     private static final String PREF_LOCKSCREEN_TORCH = "lockscreen_torch";
     private static final String KEY_LOCKSCREEN_SEE_THROUGH = "lockscreen_see_through";
+    private static final String KEY_LOCKSCREEN_BLUR_BEHIND = "lockscreen_blur_behind";
+    private static final String KEY_LOCKSCREEN_BLUR_RADIUS = "lockscreen_blur_radius";
     private static final String BATTERY_AROUND_LOCKSCREEN_RING = "battery_around_lockscreen_ring";
     private static final String KEY_PEEK = "notification_peek";
 
@@ -66,6 +68,8 @@ public class LockscreenGeneral extends SettingsPreferenceFragment implements
     private CheckBoxPreference mNotificationPeek;
     private CheckBoxPreference mLockscreenEightTargets;
     private CheckBoxPreference mSeeThrough;
+    private CheckBoxPreference mBlurBehind;
+    private SeekBarPreference mBlurRadius;
     private CheckBoxPreference mLockRingBattery;
     private CheckBoxPreference mGlowpadTorch;
     private Preference mShortcuts;
@@ -110,7 +114,17 @@ public class LockscreenGeneral extends SettingsPreferenceFragment implements
             prefs.removePreference(mGlowpadTorch);
         }
 
+        // Lockscreen see through
         mSeeThrough = (CheckBoxPreference) findPreference(KEY_LOCKSCREEN_SEE_THROUGH);
+        mBlurBehind = (CheckBoxPreference) findPreference(KEY_LOCKSCREEN_BLUR_BEHIND);
+        mBlurBehind.setChecked(Settings.System.getInt(getContentResolver(),
+                       Settings.System.LOCKSCREEN_BLUR_BEHIND, 0) == 1);
+        mBlurBehind.setEnabled(mSeeThrough.isChecked());
+        mBlurRadius = (SeekBarPreference) findPreference(KEY_LOCKSCREEN_BLUR_RADIUS);
+        mBlurRadius.setProgress(Settings.System.getInt(getContentResolver(),
+                       Settings.System.LOCKSCREEN_BLUR_RADIUS, 12));
+        mBlurRadius.setOnPreferenceChangeListener(this);
+        mBlurRadius.setEnabled(mBlurBehind.isChecked() && mBlurBehind.isEnabled());
 
         mShortcuts = (Preference) findPreference(PREF_LOCKSCREEN_SHORTCUTS);
         mShortcuts.setEnabled(!mLockscreenEightTargets.isChecked());
@@ -128,6 +142,15 @@ public class LockscreenGeneral extends SettingsPreferenceFragment implements
                     Settings.System.BATTERY_AROUND_LOCKSCREEN_RING, mLockRingBattery.isChecked()
                     ? 1 : 0);
             return true;
+        } else if (preference == mSeeThrough) {
+            Settings.System.putInt(getContentResolver(), Settings.System.LOCKSCREEN_SEE_THROUGH,
+                    mSeeThrough.isChecked() ? 1 : 0);
+            mBlurBehind.setEnabled(mSeeThrough.isChecked());
+            mBlurRadius.setEnabled(mBlurBehind.isChecked() && mBlurBehind.isEnabled());
+        } else if (preference == mBlurBehind) {
+            Settings.System.putInt(getContentResolver(), Settings.System.LOCKSCREEN_BLUR_BEHIND,
+                    mBlurBehind.isChecked() ? 1 : 0);
+            mBlurRadius.setEnabled(mBlurBehind.isChecked());
         }
         return super.onPreferenceTreeClick(preferenceScreen, preference);
     }
@@ -153,9 +176,9 @@ public class LockscreenGeneral extends SettingsPreferenceFragment implements
             Settings.System.putInt(getContentResolver(), Settings.System.LOCKSCREEN_GLOWPAD_TORCH,
                     (Boolean) objValue ? 1 : 0);
             return true;
-        } else if (preference == mSeeThrough) {
-            Settings.System.putInt(getContentResolver(), Settings.System.LOCKSCREEN_SEE_THROUGH,
-                    mSeeThrough.isChecked() ? 1 : 0);
+        } else if (preference == mBlurRadius) {
+               Settings.System.putInt(getContentResolver(), Settings.System.LOCKSCREEN_BLUR_RADIUS, (Integer)objValue);
+            return true;
         }
 
         return false;
