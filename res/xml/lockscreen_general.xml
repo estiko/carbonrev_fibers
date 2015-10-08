@@ -55,6 +55,12 @@
             android:title="@string/lockscreen_glowpad_torch_title"
             android:summary="@string/lockscreen_glowpad_torch_summary" />
 
+    <!-- See Through -->
+    <CheckBoxPreference
+        android:key="lockscreen_see_through"
+        android:title="@string/see_through_title"
+        android:summary="@string/see_through_summary" />
+
     <!-- Blur Effect -->
     <CheckBoxPreference
         android:key="lockscreen_blur_behind"
@@ -67,12 +73,6 @@
         android:summary="@string/blur_radius_summary"
         android:max="25"
         android:defaultValue="12" />
-
-    <!-- See Through -->
-    <CheckBoxPreference
-        android:key="lockscreen_see_through"
-        android:title="@string/see_through_title"
-        android:summary="@string/see_through_summary" />
 
     <PreferenceScreen
             android:key="keyguard_style"
