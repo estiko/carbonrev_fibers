@@ -61,12 +61,6 @@
             android:summary="@string/status_bar_six_bar_signal_summary"
             android:defaultValue="false" />
 
-    <!-- Tinted statusbar -->
-    <Preference
-        android:key="category_tinted_statusbar"
-        android:title="@string/title_tinted_statusbar"
-        android:fragment="com.carbon.fibers.fragments.sb.TintedStatusBar" />
-
         <PreferenceScreen
             android:key="traffic"
             android:fragment="com.carbon.fibers.fragments.sb.Traffic"
